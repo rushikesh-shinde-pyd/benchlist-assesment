@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Prospect Consultants
+{% endblock title %}
+
+
+{% block main %}              
+    <div class="row">
+        <div class="col-md-8">
+            <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary" type="submit">Add Prospect Consultant</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md">
+        <table class="table table-bordered table-dark">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Consultant Name</th>
+                <th scope="col">Technology</th>
+                <th scope="col">Trainer</th>
+                <th scope="col">Training Status</th>
+                <th scope="col">Availability Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for each in consultants %}
+                <tr>
+                <th scope="row"> {{ forloop.counter}} </th>
+                <td> {{ each.consultant_name }} </td>
+                <td> {{ each.technology }} </td>
+                <td> {{ each.trainer }} </td>
+                <td> {{ each.training_status }} </td>
+                <td> {{ each.availability_date }} </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">
+                        No Consultants available!
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>                  
+        </div>
+    </div>
+    {% endblock main %}

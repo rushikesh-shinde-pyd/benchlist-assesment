@@ -1,0 +1,537 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Submissions
+{% endblock title %}
+
+
+{% block main %}              
+    <div class="row">
+        <div class="col-md-8">
+            <small class="muted">(*) denotes mandatory fields</small>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-primary" type="submit">Add Submission</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md">
+        <table class="table table-bordered table-dark">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Consultant Name</th>
+                <th scope="col">Date of submission</th>
+                <th scope="col">Job Title</th>
+                <th scope="col">Rate</th>
+                <th scope="col">Rate confirmation</th>
+                <th scope="col">Client</th>
+                <th scope="col">Client city</th>
+                <th scope="col">Client state</th>
+                <th scope="col">Vendor Company</th>
+                <th scope="col">Vendor details</th>
+                <th scope="col">Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for each in submissions %}
+                <tr>
+                <th scope="row"> {{ forloop.counter}} </th>
+                <td> {{ each.consultant_name }} </td>
+                <td> {{ each.date_of_submission }} </td>
+                <td> {{ each.job_title }} </td>
+                <td> {{ each.rate }} </td>
+                <td> {{ each.rate_confirmation }} </td>
+                <td> {{ each.client }} </td>
+                <td> {{ each.client_city }} </td>
+                <td> {{ each.client_state }} </td>
+                <td> {{ each.vendor_company }} </td>
+                <td> {{ each.vendor_recruiter_contact }} <br /> {{ each.vendor_location }}</td>
+                <td> {{ each.submission_status }} </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12">
+                        No Submissions available!
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>    
+    
+                          
+        </div>
+    </div>
+    {% endblock main %}
+
+
+{% block modals %}
+
+    <!-- Interview Pop-up -->
+    <div id="interviewModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Interview Details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form id="interviewDetails">
+                    <div id="fields_container">
+
+                    </div>
+                    <button type="button" class="btn btn-warning" data-left="3" id="add_interview_details">Add Interview Details</button>
+        
+                    <button type="submit" id="save_interview_info" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Project Confirmed Pop-up -->
+    <div id="projectConfirmedModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Project Details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form id="projectInfo">
+                    <div id="">
+                        <div class="form-group">
+                            <input required type="text" name="clientAddress" required class="form-control form-control-sm" placeholder="Client address">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="psd">Project starts: </label>
+                            <input required type="date" id="psd" name="projectStartDate" required class="form-control form-control-sm">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <input required type="text" name="duration" required class="form-control form-control-sm" placeholder="Duration">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="ped">Project ends: </label>
+                            <input required type="date" id="ped" name="projectEndDate" required class="form-control form-control-sm">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <input required type="text" name="confirmedRate" required class="form-control form-control-sm" placeholder="Confirmed rate">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                    </div>
+        
+                    <button type="submit" id="save_project_info" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+    <!-- On Project Pop-up -->
+    <div id="onProjectModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Project Details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form id="onProjectInfo">
+                    <div id="">
+                        <div class="form-group">
+                            <input required type="text" name="clientAddress" required class="form-control form-control-sm" placeholder="Client address">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="psd">Project starts: </label>
+                            <input required type="date" id="psd" name="projectStartDate" required class="form-control form-control-sm">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <input required type="text" name="duration" required class="form-control form-control-sm" placeholder="Duration">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="ped">Project ends: </label>
+                            <input required type="date" id="ped" name="projectEndDate" required class="form-control form-control-sm">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <input required type="text" name="confirmedRate" required class="form-control form-control-sm" placeholder="Confirmed rate">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <select required type="text" name="invoiceTerms" required class="form-control form-control-sm">
+                                <option value="15">Net 15</option>
+                                <option value="30">Net 30</option>
+                                <option value="45">Net 55</option>
+                                <option value="60">Net 60</option>
+                                <option value="5">Other</option>
+                            </select>
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <input required type="text" name="invoiceContactName" required class="form-control form-control-sm" placeholder="Invoice Contact Name">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <input required type="email" name="invoiceContactEmail" required class="form-control form-control-sm" placeholder="Invoice Contact Email">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <input required type="text" name="invoiceContactAddress" required class="form-control form-control-sm" placeholder="Invoice Contact Address">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                        <div class="form-group">
+                            <input required type="text" name="invoiceCompany" required class="form-control form-control-sm" placeholder="Invoice Company">
+                            <small class="form-text text-muted">Required*</small>
+                        </div>
+                    </div>
+        
+                    <button type="submit" id="save_project_info" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Rejected By Vendor Modal -->
+    <div id="rejectedByVendorModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Vendor rejection reason</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form id="rejectedByVendorReason">
+                    <div id="rejectedByVendorReason-container">
+                        <input type="text" name="rbvReason" required aria-describedby="rbvReason1" class="form-control form-control-sm" placeholder="Reason">
+                        <small id="rbvReason1" class="form-text text-muted">Required*</small>
+                    </div>
+                    <button type="button" data-reason-i="2" class="btn btn-warning" name="another-reason-iv">Add another reason</button>
+                    <button type="submit" id="rbvbtn" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Rejected in Interview Modal -->
+    <div id="rejectedInInterviewModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Interview rejection reason</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form id="rejectedInInterviewReason">
+                    <div id="rejectedInterviewContainer">
+                        <input type="text" name="riiReason" required aria-describedby="riiReason1" class="form-control form-control-sm" placeholder="Reason">
+                        <small id="riiReason1" class="form-text text-muted">Required*</small>
+                    </div>
+                    <button type="button" data-reason-i="2" class="btn btn-warning" name="another-reason-i">Add another reason</button>
+                    <button type="submit" id="riibtn" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+    <!-- Offer Rejected Modal -->
+    <div id="offerRejectedModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Offer rejection reason</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form id="offerRejectedReason">
+                    <div id="offerRejectedReasonContainer">
+                        <input type="text" name="riiReason" required aria-describedby="riiReason1" class="form-control form-control-sm" placeholder="Reason">
+                        <small id="riiReason1" class="form-text text-muted">Required*</small>
+                    </div>
+                    <button type="button" data-reason-i="2" class="btn btn-warning" name="another-reason-io">Add another reason</button>
+                    <button type="submit" id="riibtn" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        </div>
+    </div>
+
+{% endblock modals %}
+
+
+{% block scripts %}
+
+    <script>
+
+        $(document).ready(function(){
+            
+            // ==================== Utility functions starts ====================
+
+            // Function dynamically create new field based on passed parameters
+            const plusTheReason = (btn, container, rFor) => {
+                var fieldsLeft = parseInt(btn.getAttribute('data-reason-i'))
+                
+                    if (fieldsLeft) {
+                        btn.setAttribute('data-reason-i', fieldsLeft-1)
+                        $(container).append(`
+                            <input type="text" name="${fieldsLeft}${rFor}" required aria-describedby="${fieldsLeft}${rFor}1" class="form-control form-control-sm" placeholder="Reason">
+                            <small id="${fieldsLeft}${rFor}1" class="form-text text-muted">Required*</small>
+                        `);
+                    }else {
+                        btn.remove();
+                    }
+            }
+
+            // Function for reason template along with predefined suffix 
+            const getReasonTemp = (reasonFor) =>{
+                var prefixTemp = new Date();
+                return `${prefixTemp.getDate()}/${prefixTemp.getMonth()}/${prefixTemp.getFullYear()} - ${reasonFor} rejected due to `;
+            }
+
+
+            // Function submits user-input reasons to reason field
+            const applyUserInputReasons = (formName, reasonFor) => {
+                var reason = $('#id_reason');
+                var modalName = $('#' + formName).parents('.modal').attr('id');
+                reason.val('');
+                reason.val(`${reasonFor} details: \n\n`);
+                var data = $('#' + formName).serializeArray();
+                for (const index in data) {
+                    const element = data[index].value;
+                    reason.val(`${reason.val()}${getReasonTemp(reasonFor)} ${element} \n`);
+                }
+                $('#id_reason').show();
+                $('#' + modalName).modal("hide");
+            }
+
+
+            // Function submits user-input info to note field
+                const applyUserInputNote = (formName, noteFor) => {
+                    var note = $('#id_note');
+                    var modalName = $('#' + formName).parents('.modal').attr('id');
+                    note.val('');
+                    note.val(`${noteFor} details: \n\n`);
+                    var data = $('#' + formName).serializeArray();
+                    for (const index in data) {
+                        const element = data[index].value;
+                        note.val(`${note.val()} ${element} \n`);
+                    }
+                    $('#id_note').show();
+                    $('#' + modalName).modal("hide");
+                }
+
+            // ==================== Utility functions ends ====================
+
+
+            // Add interview details by taking user-input from pop modal
+            $('#add_interview_details').on('click', (e) => {
+                var fieldsLeft = e.target.getAttribute('data-left')
+            
+                if (parseInt(fieldsLeft)) {
+                    e.target.setAttribute('data-left', parseInt(fieldsLeft)-1)
+                    $('#fields_container').append(`
+                        <div class="form-group">
+                            <input type="text" name="${fieldsLeft}1name" required aria-describedby="iname" class="form-control form-control-sm" placeholder="Interviewer name">
+                            <small id="iname" class="form-text text-muted">Required*</small>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="${fieldsLeft}1link" required aria-describedby="illink" class="form-control form-control-sm" placeholder="LinkedIn link">
+                                <small id="illink" class="form-text text-muted">Required*</small>
+                            </div>
+                            <div class="form-group">
+                                <input type="date" name="${fieldsLeft}1date" required aria-describedby="idate" class="form-control form-control-sm" placeholder="Date and Time">
+                                <input type="time" name="${fieldsLeft}1time" required aria-describedby="itime" class="form-control form-control-sm" placeholder="Date and Time">
+                                <small id="itime" class="form-text text-muted">Required*</small>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" name="${fieldsLeft}1email" aria-describedby="iemail" class="form-control form-control-sm" placeholder="Interviewer email">
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" id="iphone" class="form-control form-control-sm" name="${fieldsLeft}1phone" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" placeholder="Phone"> 
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="iadd" class="form-control form-control-sm" name="${fieldsLeft}1details" placeholder="Addtional details"> 
+                        </div>
+                        <hr>
+                    `);
+                }else {
+                    $('#add_interview_details').remove();
+                }
+            });
+
+
+            // Modal show based on switch result 
+            $('#id_submission_status').on('change', (e) => {
+                switch (event.target.value) {
+                    case '4':
+                        $("#interviewModal").modal("show");
+                        break;
+
+                    case '5':
+                        $("#projectConfirmedModal").modal("show");
+                        break;
+
+                    case '6':
+                        $("#onProjectModal").modal("show");
+                        break;
+
+                    case '7':
+                        $("#rejectedByVendorModal").modal("show");
+                        break;
+
+                    case '8':
+                        $("#rejectedInInterviewModal").modal("show");
+                        break;
+
+                    case '9':
+                        $("#offerRejectedModal").modal("show");
+                        break;
+
+                    default:
+                        break;
+                }
+            })
+
+
+            // Based on rate checkbox submission status changes to rate confirmation
+            $('#id_rate_confirmation').on('change', (e) => {
+                if (e.target.checked) {
+                        $('#id_submission_status option[value="2"]').prop('selected', true);
+                }
+            })    
+
+            // Add interview details taken from pop-up to note field 
+            $('#interviewDetails').on('submit', (e) => {
+                e.preventDefault();
+                applyUserInputNote(e.target.id, 'Interview');
+            })
+
+
+            // Adds project details taken from pop-up to note field
+            $('#projectInfo').on('submit', (e) => {
+                e.preventDefault();
+                applyUserInputNote(e.target.id, 'Project');
+            })
+
+
+            // Adds on-project details taken from pop-up to note field
+            $('#onProjectInfo').on('submit', (e) => {
+                e.preventDefault();
+                applyUserInputNote(e.target.id, 'On-Project')
+            })
+  
+
+            // Dynamically adds an input field when user select other option from dropdown
+            $('select[name="invoiceTerms"]').on('change', (e) => {
+                var termText = $('select[name="invoiceTerms"]').children('option:selected').text();
+                $('[name="other"]').remove();
+                if (termText == 'Other') {
+                    $('select[name="invoiceTerms"]').parent().append(`
+                        <input type="number" required name="other" min="0" step=".01" placeholder="Invoice term">
+                    `);
+                    var rateBox = $(document).find('[name="other"]');
+                    rateBox.focus();
+                    rateBox.on('focusout keyup', () => {
+                        $('select[name="invoiceTerms"]').attr('value', rateBox.val());
+                    })
+                }
+            })
+
+
+            // *** Populate reason fields based on user-input taken from pop-ups
+
+            // Rejection reason for vendors
+            $('[name="another-reason-iv"]').on('click', (e) => {
+                plusTheReason(e.target, '#rejectedByVendorReason-container', 'vendor');
+            })
+
+
+            // Rejection reason for interviews
+            $('[name="another-reason-i"]').on('click', (e) => {
+                plusTheReason(e.target, '#rejectedInterviewContainer', 'interview');
+            })
+
+
+            // Rejection reason for offers
+            $('[name="another-reason-io"]').on('click', (e) => {
+                plusTheReason(e.target, '#offerRejectedReasonContainer', 'offer');
+            })
+
+    
+            // *** Reason form submissions
+
+            // Vedor rejected form submission
+            $('#rejectedByVendorReason').on('submit', (e) => {
+                e.preventDefault();
+                applyUserInputReasons(e.target.id, 'Vendor');
+            })
+
+
+            // Interview rejected form submission
+            $('#rejectedInInterviewReason').on('submit', (e) => {
+                e.preventDefault();
+                applyUserInputReasons(e.target.id, 'Interview');
+            })
+
+
+            // Offer rejected form submission
+            $('#offerRejectedReason').on('submit', (e) => {
+                e.preventDefault();
+                applyUserInputReasons(e.target.id, 'Offer');
+            })
+        
+            
+            // toggles visibility of note and reason fields based in user-input-data 
+            $('#id_reason, #id_note').hide();
+           
+
+     // --------------------------------------------------------
+    });
+    // End of Ready function
+    </script>
+
+{% endblock scripts %}
+

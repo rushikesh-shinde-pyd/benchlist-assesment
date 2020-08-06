@@ -1,0 +1,59 @@
+
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Bench list
+{% endblock title %}
+
+{% block main %}              
+    <div class="row">
+        <div class="col-md-8">
+            <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary" type="submit">Add Benchlist Consultant</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md">
+        <table class="table table-bordered table-dark">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Consultant Name</th>
+                <th scope="col">Title</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Email</th>
+                <th scope="col">Visa</th>
+                <th scope="col">Location</th>
+                <th scope="col">Available Date</th>
+                <th scope="col">Bench Days</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for each in consultants %}
+                <tr>
+                <th scope="row"> {{ forloop.counter}} </th>
+                <td> {{ each.consultant_name }} </td>
+                <td> {{ each.title }} </td>
+                <td> {{ each.phone }} </td>
+                <td> {{ each.email }} </td>
+                <td> {{ each.visa }} </td>
+                <td> {{ each.location }} </td>
+                <td> {{ each.availability_date }} </td>
+                <td> {{ each.bench_days }} </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">
+                        No Consultants available!
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>                  
+        </div>
+    </div>
+    {% endblock main %}
